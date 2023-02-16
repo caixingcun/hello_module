@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hello_module/channels.dart';
+import 'package:hello_module/thirdpage.dart';
 import 'secondpage.dart';
 void main() => runApp(const MyApp());
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'home':(context)=> MyHomePage(title: "首页"),
         '/second':(context)=>SecondPage(),
+        "/third":(context)=> ThirdPage(),
       },
     );
   }
@@ -134,7 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FlatButton(onPressed: (){
               FlutterModule.jump2FlutterViewPage();
-            }, child: Text("jump2FlutterViewPage"))
+            }, child: Text("jump2FlutterViewPage")),
+            FlatButton(onPressed: (){
+              FlutterModule.jump2FlutterFragmentActivity();
+            }, child: Text("jump2FlutterFragmentActivity"))
           ],
         ),
       ),
