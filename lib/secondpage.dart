@@ -13,6 +13,13 @@ class SecondPage extends StatefulWidget {
 
 class _SecondPageState extends State<SecondPage> {
   String? _platform = "未初始化";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getVersion();
+  }
   @override
   Widget build(BuildContext context) {
       return Scaffold(
@@ -21,8 +28,9 @@ class _SecondPageState extends State<SecondPage> {
           child:  Text("$_platform"),
         ),
         floatingActionButton: FloatingActionButton(
+          child: Text("开新页面"),
           onPressed: (){
-            _getVersion();
+            FlutterModule.jump2FlutterViewPage();
           },
         ),
       );

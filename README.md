@@ -56,7 +56,7 @@ var _platformVersion = await FlutterModule.platformVersion
 ~~~
 
 
-### 混合开发 开屏flutter 页面下  原生通知Android
+### 混合开发 开屏flutter 页面下  原生通知Flutter
 
 ## 原生
 ~~~

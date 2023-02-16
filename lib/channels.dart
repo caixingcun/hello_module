@@ -9,4 +9,7 @@ class FlutterModule{
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
+  static Future<void> jump2FlutterViewPage()async {
+    await _channel.invokeMethod("jump2FlutterViewPage");
+  }
 }

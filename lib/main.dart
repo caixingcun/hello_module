@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hello_module/channels.dart';
 import 'secondpage.dart';
 void main() => runApp(const MyApp());
 
@@ -130,7 +131,10 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: (){
                  Navigator.pushNamed(context, "/second");
               },
-            )
+            ),
+            FlatButton(onPressed: (){
+              FlutterModule.jump2FlutterViewPage();
+            }, child: Text("jump2FlutterViewPage"))
           ],
         ),
       ),
