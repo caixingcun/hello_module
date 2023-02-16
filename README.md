@@ -56,3 +56,49 @@ var _platformVersion = await FlutterModule.platformVersion
 ~~~
 
 
+### 混合开发 开屏flutter 页面下  原生通知Android
+
+## 原生
+~~~
+class MainActivity : FlutterActivity() {
+
+    lateinit var nativeChannel: MethodChannel
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        nativeChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"native_channel")
+         // 原生主动回复 flutter
+        nativeChannel.invokeMethod("flutter_print","i am native")
+    }
+
+}
+~~~
+
+## dart 
+~~~
+  static MethodChannel native_channel = const MethodChannel("native_channel");
+  
+  void initNativeChannel(){
+    native_channel.setMethodCallHandler(_nativeMethodChannelCallHandler);
+  }
+
+  Future<dynamic> _nativeMethodChannelCallHandler(MethodCall call) async{
+    switch(call.method){
+      case 'flutter_print':
+        print("${call.arguments}");
+        break;
+    }
+  }
+  
+  @override
+  void initState() {
+    initNativeChannel(); // 提前注册
+    super.initState();
+  }
+
+~~~
+

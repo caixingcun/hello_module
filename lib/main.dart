@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'secondpage.dart';
 void main() => runApp(const MyApp());
 
@@ -62,6 +63,27 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  static MethodChannel native_channel = const MethodChannel("native_channel");
+
+  void initNativeChannel(){
+    native_channel.setMethodCallHandler(_nativeMethodChannelCallHandler);
+  }
+
+  Future<dynamic> _nativeMethodChannelCallHandler(MethodCall call) async{
+    switch(call.method){
+      case 'flutter_print':
+        print("${call.arguments}");
+        break;
+    }
+  }
+
+  @override
+  void initState() {
+    initNativeChannel();
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -119,4 +141,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+
 }
