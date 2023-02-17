@@ -319,4 +319,19 @@ class FlutterModule{
 ~~~
 
 
+### 单独打包 module 为 aar ，native 无需集成Flutter 环境
+
+~~~
+ cd .android 
+ ./gradlew flutter:assembleDebug
+ 
+ 出错
+ Execution failed for task ':flutter:compileDebugJavaWithJavac'.
+> Could not find tools.jar. Please check that /Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home contains a valid JDK installation.
+
+ .android/gradle.properties 添加本地JDK配置
+ org.gradle.java.home=/Applications/Android Studio.app/Contents/jre/Contents/Home
+ 再次打包  
+ 解决  .android/Flutter/build/outputs/aar/flutter-debug.aar
+~~~
 
