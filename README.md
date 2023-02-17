@@ -335,3 +335,44 @@ class FlutterModule{
  解决  .android/Flutter/build/outputs/aar/flutter-debug.aar
 ~~~
 
+### Flutter 使用Android 原生 View 
+
+## 原生
+~~~
+// 创建原生view
+class CustomNativeView(context: Context?):PlatformView{
+    private val showTextView:TextView = TextView(context)
+    init {
+        showTextView.text = "hello this is a android view"
+    }
+    override fun getView(): View {
+        return showTextView
+    }
+
+    override fun dispose() {
+
+    }
+
+}
+// 创建工厂类
+class  NativeViewFactory(var message:BinaryMessenger):PlatformViewFactory(StandardMessageCodec.INSTANCE){
+    override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
+        return CustomNativeView(context)
+    }
+}
+
+// 加载引擎时添加
+   
+   engine?.platformViewsController.registry.registerViewFactory("android_native_view",NativeViewFactory(binaryMessager))
+ 
+~~~
+## dart
+~~~
+   Widget getNativeView(){
+    var view = Container(
+      height: 200,
+      child: AndroidView(viewType: "android_native_view",),
+    );
+    return view;
+  }
+~~~

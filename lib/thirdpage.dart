@@ -10,7 +10,7 @@ class ThirdPage extends StatefulWidget {
 
 
 class _ThirdPageState extends State<ThirdPage> {
-  MethodChannel methodChannel = MethodChannel("flutter_to_native");
+  MethodChannel methodChannel = MethodChannel("native_to_flutter");
   String _content  = "";
   @override
   void initState() {
@@ -44,9 +44,18 @@ class _ThirdPageState extends State<ThirdPage> {
                 FlutterModule.flutterSend(textEditController.text.toString());
               }, child: Text("发送Flutter内容")),
               Text("$_content"),
+              getNativeView(),
             ],
           ),
         ),
       );
+  }
+
+  Widget getNativeView(){
+    var view = Container(
+      height: 200,
+      child: AndroidView(viewType: "android_native_view",),
+    );
+    return view;
   }
 }
