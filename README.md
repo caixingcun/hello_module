@@ -213,5 +213,110 @@ class MainActivity : FlutterActivity() {
 
 ~~~
 
+### 原生 嵌入FlutterFragment 并双工通信
+## 原生
+~~~
+    // App 提前准备 FlutterEngine （防止直接createEngine 拿不到，并且可以设置路由）
+      var flutterEngine = FlutterEngine(this)
+        flutterEngine.navigationChannel.setInitialRoute("/third")
+        flutterEngine.dartExecutor.executeDartEntrypoint(
+            DartExecutor.DartEntrypoint.createDefault()
+        )
+       FlutterEngineCache.getInstance().put("/third",flutterEngine)
+    
+    // Activity 中 创建并添加 FlutterFragment    
+    
+     var flutterFragment = FlutterFragment.withCachedEngine("/third").build<FlutterFragment>()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fl,flutterFragment)
+            .commit()
+        
+        var engine = FlutterEngineCache.getInstance().get("/third")
+        //初始化通道
+        MethodChannel(engine?.dartExecutor?.binaryMessenger,"flutter_to_native").setMethodCallHandler(object:MethodChannel.MethodCallHandler{
+            override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+                if(call.method == "flutterSend"){
+                    findViewById<TextView>(R.id.tv_content).append(call.arguments.toString())
+                }
+            }
+        })
+
+        nativeChannel = MethodChannel(engine?.dartExecutor?.binaryMessenger,"native_to_flutter")
+
+        // 生命周期绑定
+        lifecycle.addObserver(object :DefaultLifecycleObserver{
+            override fun onStart(owner: LifecycleOwner) {
+                super.onStart(owner)
+                flutterFragment.onStart()
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                super.onStop(owner)
+                flutterFragment.onStop()
+            }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                super.onDestroy(owner)
+                flutterFragment.onDestroy()
+            }
+        })
+    }
+    
+    // 原生调用Flutter
+     nativeChannel.invokeMethod("nativeSend",content)
+~~~
+## dart
+~~~
+    // 在对应 router 组件下 创建通道
+    
+  MethodChannel methodChannel = MethodChannel("flutter_to_native");
+  String _content  = "";
+  @override
+  void initState() {
+    super.initState();
+    methodChannel.setMethodCallHandler(_methodCallHandler);
+  }
+
+  Future<dynamic> _methodCallHandler(MethodCall call) async{
+      if(call.method == "nativeSend"){
+          _content = _content +"\n";
+          _content =_content + call.arguments.toString();
+          setState(() {
+
+          });
+      }
+  }
+    
+    
+ // 独立的一个 channel 类中 
+ 
+ import 'package:flutter/services.dart';
+
+class FlutterModule{
+  // 静态注册 一个 channel （需要原生来匹配，匹配后，_channel 就可以通过该通道执行一些函数了）
+  static const MethodChannel _channel = MethodChannel('flutter_to_native');
+  // 静态注册一个 方法
+  static Future<String?> get platformVersion async {
+    final String? version = await _channel.invokeMethod('getPlatformVersion');
+    return version;
+  }
+  static Future<void> jump2FlutterViewPage()async {
+    await _channel.invokeMethod("jump2FlutterViewPage");
+  }
+
+  static Future<void> jump2FlutterFragmentActivity() async{
+    await _channel.invokeMethod("jump2FlutterFragmentActivity");
+  }
+
+  static Future<void> flutterSend(String msg) async {
+    await _channel.invokeMethod("flutterSend",msg);
+}
+}
+   
+  // 在需要的位置 调用特定的channel ， 需要注意这里声明了两个 channel 
+  // 通知 原生 还是使用 FlutterModule ，接收原生 消息 在 flutter_to_native 的channel 回调中
+    FlutterModule.flutterSend(textEditController.text.toString());
+~~~
+
 
 
